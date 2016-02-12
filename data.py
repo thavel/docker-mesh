@@ -55,7 +55,7 @@ class DockerData(object):
         """
         return self._client.containers()
 
-    def nodes(self, image=False):
+    def nodes(self, image=True):
         """
         Get a usable list of nodes (by container's name or docker image).
         """
@@ -92,7 +92,7 @@ class DockerData(object):
                 name = link.split('/')[1]
                 if name == previous:
                     continue
-                previous = link
+                previous = name
 
                 dest = self._find(name, containers)
                 if not dest:

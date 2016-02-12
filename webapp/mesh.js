@@ -15,15 +15,22 @@ app.config(["$httpProvider", function ($httpProvider) {
 
 function Network(elementId) {
     this.container = document.getElementById(elementId);
-    this.options = {};
-    this.nodes = undefined;
-    this.edges = undefined;
+    this.nodes = new vis.DataSet();
+    this.edges = new vis.DataSet();
     this.vis = undefined;
+    this.options = {
+        nodes : {
+            shape: 'dot',
+            size: 10
+        }
+    };
+
 }
 
 Network.prototype.build = function() {
     var data = {
-        nodes: this.nodes
+        nodes: this.nodes,
+        edges: this.edges
     };
     this.vis = new vis.Network(this.container, data, this.options);
 };
@@ -38,11 +45,13 @@ app.controller("meshController", function($scope, $location, $http) {
 
     $http.get(api + "/v1/nodes")
     .then(function(res) {
-        network.nodes = new vis.DataSet(res.data);
+        network.nodes.add(res.data);
         network.build();
-    })
-    .catch(function(err) {
+    });
 
+    $http.get(api + "/v1/edges")
+    .then(function(res) {
+        network.edges.add(res.data);
     });
 
 });
