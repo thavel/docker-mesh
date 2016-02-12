@@ -4,7 +4,7 @@ from nyuki.capabilities import Response
 from aiohttp_cors import ResourceOptions, setup as cors_setup
 
 from webapp import Webapp
-from docker_api import DockerApi
+from data import DockerData
 
 
 log = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class Mesh(Nyuki):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.webapp = Webapp(self.loop)
-        self.docker = DockerApi()
+        self.data = DockerData()
 
     async def setup(self):
         # Enable cors capabilities for the api routes
@@ -43,7 +43,7 @@ class Mesh(Nyuki):
     class Containers:
 
         def get(self, request):
-            return Response(status=200, body=self.docker.containers)
+            return Response(status=200, body=self.data.containers)
 
 
 if __name__ == '__main__':

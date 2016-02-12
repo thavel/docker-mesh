@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 DEFAULT_URI = 'unix://var/run/docker.sock'
 
 
-class DockerApi(object):
+class DockerData(object):
 
     def __init__(self, uri=DEFAULT_URI):
         self._client = Client(base_url=uri)
