@@ -1,0 +1,8 @@
+mesh:
+    build: .
+    command: --l DEBUG
+    ports:
+        - 9200:8080
+        - 9201:8081
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
