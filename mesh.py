@@ -43,8 +43,13 @@ class Mesh(Nyuki):
     class Containers:
 
         def get(self, request):
-            return Response(status=200, body=self.data.containers)
+            return Response(self.data.containers)
 
+    @resource(endpoint='/nodes', version='v1')
+    class Nodes:
+
+        def get(self, request):
+            return Response(self.data.nodes)
 
 if __name__ == '__main__':
     nyuki = Mesh()
