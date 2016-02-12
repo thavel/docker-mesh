@@ -13,15 +13,24 @@ app.config(["$httpProvider", function ($httpProvider) {
     $httpProvider.defaults.withCredentials = true;
 }]);
 
+/*
+ * Models
+ */
+
 function Network(elementId) {
-    this.container = document.getElementById(elementId);
-    this.nodes = new vis.DataSet();
-    this.edges = new vis.DataSet();
-    this.vis = undefined;
-    this.options = {
+    this._container = document.getElementById(elementId);
+    this._nodes = new vis.DataSet();
+    this._edges = new vis.DataSet();
+    this._options = {
         nodes : {
-            shape: 'dot',
-            size: 10
+            shape: "dot",
+            size: 20,
+            borderWidth: 3
+        },
+        edges: {
+            smooth: {
+                roundness: 0.9
+            }
         }
     };
 
@@ -29,10 +38,25 @@ function Network(elementId) {
 
 Network.prototype.build = function() {
     var data = {
-        nodes: this.nodes,
-        edges: this.edges
+        nodes: this._nodes,
+        edges: this._edges
     };
-    this.vis = new vis.Network(this.container, data, this.options);
+    this._vis = new vis.Network(this._container, data, this._options);
+};
+
+Network.prototype.addNodes = function(nodes) {
+    _.forEach(nodes, function(node) {
+        node.color = {background: "#cccccc", border: "#1A78D5"};
+        node.font = {size: 12, color: "white"};
+    });
+    this._nodes.add(nodes);
+};
+
+Network.prototype.addEdges = function(edges) {
+    _.forEach(edges, function(edge) {
+        edge.color = {color: "#cccccc"};
+    });
+    this._edges.add(edges);
 };
 
 /*
@@ -45,13 +69,13 @@ app.controller("meshController", function($scope, $location, $http) {
 
     $http.get(api + "/v1/nodes")
     .then(function(res) {
-        network.nodes.add(res.data);
+        network.addNodes(res.data);
         network.build();
     });
 
     $http.get(api + "/v1/edges")
     .then(function(res) {
-        network.edges.add(res.data);
+        network.addEdges(res.data);
     });
 
 });
