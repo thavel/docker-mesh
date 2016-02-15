@@ -1,3 +1,4 @@
+import re
 import logging
 from uuid import getnode
 from docker import Client
@@ -9,8 +10,9 @@ DEFAULT_URI = 'unix://var/run/docker.sock'
 
 class DockerData(object):
 
-    def __init__(self, uri=DEFAULT_URI):
+    def __init__(self, uri=DEFAULT_URI, ignore=list()):
         self._client = Client(base_url=uri)
+        self._ignore = [re.compile(regex) for regex in ignore]
 
     @staticmethod
     def _get_mac(cont):
@@ -39,6 +41,16 @@ class DockerData(object):
                 return cont
         return None
 
+    @classmethod
+    def _filter(cls, regex, into):
+        """
+        Remove matching regex in a list of containers.
+        """
+        for cont in into:
+            if regex.match(cont['Image']):
+                into.remove(cont)
+        return into
+
     @property
     def mac(self):
         """
@@ -53,7 +65,11 @@ class DockerData(object):
         """
         Get a raw list of containers.
         """
-        return self._client.containers()
+        # Let's assume ignore regex are targeting docker images only.
+        containers = self._client.containers()
+        for regex in self._ignore:
+            self._filter(regex, containers)
+        return containers
 
     def nodes(self, image=True):
         """

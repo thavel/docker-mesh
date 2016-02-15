@@ -16,7 +16,7 @@ class Mesh(Nyuki):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.webapp = Webapp(self.loop)
-        self.data = DockerData()
+        self.data = DockerData(ignore=self.config['ignore'])
 
     async def setup(self):
         # Enable cors capabilities for the api routes
